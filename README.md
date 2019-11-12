@@ -1,8 +1,6 @@
 # gocd-usage
 How to setup gocd, then introduce some basic usage
 
-
-
 ### 1. Setup GoCD environment using docker
 Pull official GoCD server and agent images   
 ```bash
@@ -39,14 +37,18 @@ Log into the gocd-agent container.
 example:
 `apk add --no-cache nodejs yarn`
 
-
 ### 2. Pipeline example 
 
 #### 2.1 手动添加
 
+`"ADMIN"` -> `"Pipelines"` -> `"+ Create a new pipeline ..."`
+
+**Conditional task execution**
+
+You can use the run_if attribute of the task to achieve that. It takes passed, failed or any. Passed is the default value, that is only if the current task is passed it moves on to the next one. Failed is the exact opposite of this. I generally use it for setting up assertions within the job. Any is basically you don't care the outcome of that task. GoCD will not fail irrespective of the outcome of that task within the job.
 
 #### 2.2 pipeline as code
-click "ADMIN" -> "Config XML" -> "EDIT" ,then add  below context
+click `"ADMIN"` -> `"Config XML"` -> `"EDIT"` ,then add  below context
 ```bash
 <?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="132">
@@ -74,8 +76,14 @@ click "ADMIN" -> "Config XML" -> "EDIT" ,then add  below context
   <pipelines group="defaultGroup" />
 </cruise>
 ```
-https://github.com/cicd-draft/node-demo
 
+### 3. 插件
+[GoCD PLUGINS](https://www.gocd.org/plugins)
+> 有些竟然是需要付费的 >::<
+- script executor task
+每个task只能执行一条命令，导致每个job都有十几个task这个插件可以让你像shell脚本一样编排指令，从而愉快地合并臃肿的task
+
+- docker task
 
 --- 
 More ref:
