@@ -46,7 +46,7 @@ example:
 
 
 #### 2.2 pipeline as code
-click "ADMIN" -> "Config XML",then add 
+click "ADMIN" -> "Config XML" -> "EDIT" ,then add  below context
 ```bash
 <?xml version="1.0" encoding="utf-8"?>
 <cruise xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="cruise-config.xsd" schemaVersion="132">
@@ -82,4 +82,5 @@ More ref:
 
 - [set up doc](https://janikvonrotz.ch/2018/11/06/setup-gocd-environment-using-docker/)
 - [gocd doc](https://docs.gocd.org/current/introduction/concepts_in_go.html)
-- https://docs.gocd.org/current/configuration/configuration_reference.html#cruise
+- [GoCD Configuration Reference](https://docs.gocd.org/current/configuration/configuration_reference.html#cruise)
+- [gocd-yaml-config-plugin](https://github.com/tomzo/gocd-yaml-config-plugin)
