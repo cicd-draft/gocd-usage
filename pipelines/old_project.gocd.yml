@@ -1,0 +1,91 @@
+pipelines:
+  IMAGE-SERVICE:
+    group: Foo-service
+    timer:
+      only_on_changes: yes
+      spec: "* * * * * ?"
+    materials:
+      mygit:
+        git: https://117.121.110.xx/Foo-service/image-service.git
+        blacklist:
+          - sonar-scanner-2.8/**/*.*
+    stages:
+      - test:
+          clean_workspace: true
+          jobs:
+            test:
+              resources:
+                - openjdk10
+              tasks:
+                - plugin:
+                    options:
+                      script: docker rm -f $(docker ps -aqf name=_1) || echo 'no running CI-related containers'
+                    configuration:
+                      id: script-executor
+                      version: 1
+                    run_if: any
+                - exec:
+                    command: docker-compose
+                    arguments:
+                      - -f
+                      - docker-compose-ci.yml
+                      - up
+                      - -d
+                    run_if: passed
+                - exec:
+                    command: sbt
+                    arguments:
+                      - flywayMigrate
+                    run_if: passed
+                - exec:
+                    command: sbt
+                    arguments:
+                      - clean
+                      - test
+                    run_if: passed
+                - exec:
+                    command: docker-compose
+                    arguments:
+                      - -f
+                      - docker-compose-ci.yml
+                      - down
+                    run_if: any
+                - exec:
+                    command: ./sonar-scanner-2.8/bin/sonar-scanner
+                    run_if: passed
+      - build:
+          clean_workspace: true
+          jobs:
+            docker:
+              resources:
+                - openjdk10
+              tasks:
+                - exec:
+                    command: sbt
+                    arguments:
+                      - clean
+                      - dist
+                    run_if: passed
+                - exec:
+                    command: unzip
+                    arguments:
+                      - -o
+                      - target/universal/image-service-*.zip
+                    run_if: passed
+                - plugin:
+                    run_if: passed
+                    configuration:
+                      id: docker.pipeline.plugin
+                      version: 1
+                    options:
+                      ImageName: image-service-master-gocd
+                      DockerFileName: Dockerfile
+                      RegistryUsername: Foomme
+                      RegistryPassword: docker2017!
+                      Username: Foo-service
+                      RegistryURL: 117.121.110.38:443
+                      ImageTag: ${GO_PIPELINE_LABEL};latest
+                      isPush: true
+                      BUILD_NO_CACHE: true
+                      CleanAfterComplete: false
+                      BUILD_MICROLABELING: false
