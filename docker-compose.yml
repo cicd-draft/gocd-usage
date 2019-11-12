@@ -1,0 +1,12 @@
+go-server:
+  image: gocd/gocd-server:v19.10.0
+  ports:
+    - '8153:8153'
+    - '8154:8154'
+
+goagent:
+  image: gocd/gocd-agent-alpine-3.9:v19.10.0
+  links:
+    - go-server
+  environment:
+    GO_SERVER_URL: https://go-server:8154/go
